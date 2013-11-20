@@ -1,3 +1,7 @@
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/atomic.h>
+
 #define	IR_RAW_SIZE 128
 
 // Length in realtime depends on prescaler settings. In this case, each timer
@@ -19,8 +23,11 @@ typedef enum {
   NO_MATCH = -1
 } ir_command_t;
 
-const char *command_labels[NUMBER_OF_IR_CODES] = {
-  "Volume Up",
-  "Volume Down",
-  "Mute"
-};
+extern void ir_init(void);
+extern void ir_enable(void);
+extern void ir_disable(void);
+extern bool ir_available(void);
+extern ir_command_t match_ir_code(volatile uint8_t *);
+
+extern const char *command_labels[];
+extern volatile uint8_t *ir_signal_readcopy;
