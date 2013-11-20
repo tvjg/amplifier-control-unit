@@ -1,7 +1,7 @@
 PROJECT_NAME=head-unit
 MCU=atmega168
 CPU=16000000L
-SOURCES=main.c ir.c
+SOURCES=main.c uart.c ir.c
 PROGRAMMER=arduino
 PORT=/dev/ttyUSB0
 BAUDRATE=19200
