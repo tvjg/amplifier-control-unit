@@ -1,5 +1,7 @@
 #define	IR_RAW_SIZE 128
-#define MIN_PULSE 5U
+
+// TODO: Do something useful with this or kill it? Dependent on prescaler settings.
+#define MIN_PULSE 100U
 #define MAX_PULSE 10000U
 
 // Since this receiver uses a universal learning approach, the EEPROM size sets

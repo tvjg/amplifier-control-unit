@@ -1,5 +1,6 @@
 /* vim: set filetype=c : */
 
+#include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/atomic.h>
 
@@ -73,33 +74,30 @@ int main (void) {
 }
 
 void ir_init (void) {
+  zero_pulses(ir_signal);
+  zero_pulses(ir_signal_copy);
+
   DDRD  &= ~(1 << PD2);     // PD2/D2/Infrared as input
   PORTD |=  (1 << PD2);     // pull-up on
 
   EICRA |=  (1 << ISC00);   // trigger INT0 on any change
 
   // Timer1 setup
-  timer1_off;
-  TCCR1A = 0x00;    // Timer1 Normal mode
-  TIMSK1 = 0x01;    // Timer1 Overflow Interrupt Enable
-  TCNT1  = 0;
-
-  ir_reset();
+  TCCR1A = 0x00;
+  TCCR1B = (1 << WGM12);
+  TCNT1  = 0x0000;
+  OCR1A  = 0x4E1F; // 10ms
+  /*OCR1A  = 29999; // 15ms*/
+  TIMSK1 = (1 << OCIE1A);
 }
 
 void ir_enable (void) {
-  ir_reset();
   ext_int_on(IR_INTERRUPT);
 }
 
 void ir_disable (void) {
   ext_int_off(IR_INTERRUPT);
   timer1_off;
-}
-
-void ir_reset (void) {
-  zero_pulses(ir_signal);
-
   receiving = 0;
 }
 
@@ -107,6 +105,7 @@ bool ir_available (void) {
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     if (data_available) {
       data_available = 0;
+      flip_buffers();
       return 1;
     }
   }
@@ -146,14 +145,13 @@ ISR(INT0_vect) {
   TCNT1 = 0;
 }
 
-ISR(TIMER1_OVF_vect) {
+ISR(TIMER1_COMPA_vect) {
   // wait for the caller to re-enable reception
+  // TODO: Smoother to have a small queue for incoming IR commands
   ir_disable();
 
-  ir_signal[change_count] = 0xff;
-  flip_buffers();
-
-  ir_reset();
+  ir_signal[change_count] = 0xFF;
+  data_available = 1;
 }
 
 void zero_pulses (volatile uint8_t *array) {
@@ -171,7 +169,5 @@ void flip_buffers (void) {
     tmp = ir_signal_copy;
     ir_signal_copy = ir_signal;
     ir_signal = tmp;
-
-    data_available = 1;
   }
 }
