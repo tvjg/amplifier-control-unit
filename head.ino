@@ -33,7 +33,7 @@ static uint8_t ir_commands[NUMBER_OF_IR_CODES][IR_RAW_SIZE];
 int main (void) {
   init();  // take care of Arduino timers etc. etc.
 
-  Serial.begin(9600);
+  Serial.begin(57600);
 
   // F() macro neatly wraps string storage/retrieval from flash memory
   // http://playground.arduino.cc/Main/Printf#sourceblock5
