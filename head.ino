@@ -42,7 +42,6 @@ int main (void) {
   DDRB  |=  (1 << PB5);    // PB5/D13/LED as output
 
   ir_init();
-  ir_enable();
 
   sei();
 
@@ -67,36 +66,26 @@ int main (void) {
       Serial.println(change_count+1);
       Serial.print("Diagnosis: ");
       Serial.println(msg);
-
-      ir_enable();
     }
   }
 }
 
 void ir_init (void) {
-  zero_pulses(ir_signal);
-  zero_pulses(ir_signal_copy);
-
   DDRD  &= ~(1 << PD2);     // PD2/D2/Infrared as input
   PORTD |=  (1 << PD2);     // pull-up on
 
+  ext_int_on(IR_INTERRUPT);
   EICRA |=  (1 << ISC00);   // trigger INT0 on any change
 
   // Timer1 setup
   TCCR1A = 0x00;
   TCCR1B = (1 << WGM12);
   TCNT1  = 0x0000;
-  OCR1A  = 0x4E1F; // 10ms
-  /*OCR1A  = 29999; // 15ms*/
+  OCR1A  = (MAX_PULSE - 1); // 10ms
   TIMSK1 = (1 << OCIE1A);
 }
 
-void ir_enable (void) {
-  ext_int_on(IR_INTERRUPT);
-}
-
-void ir_disable (void) {
-  ext_int_off(IR_INTERRUPT);
+void ir_reset (void) {
   timer1_off;
   receiving = 0;
 }
@@ -105,11 +94,10 @@ bool ir_available (void) {
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     if (data_available) {
       data_available = 0;
-      flip_buffers();
       return 1;
     }
+    return 0;
   }
-  return 0;
 }
 
 ir_command_t match_ir_code(volatile uint8_t *measured_ir_signal)
@@ -122,9 +110,10 @@ ISR(INT0_vect) {
   PORTB ^= (1 << PB5);
 
   if (!receiving) {
-    timer1_on;
     change_count = 0;
     receiving = 1;
+    TCNT1 = 0;
+    timer1_on;
     return;
   }
   
@@ -146,28 +135,17 @@ ISR(INT0_vect) {
 }
 
 ISR(TIMER1_COMPA_vect) {
-  // wait for the caller to re-enable reception
-  // TODO: Smoother to have a small queue for incoming IR commands
-  ir_disable();
-
   ir_signal[change_count] = 0xFF;
+  
+  flip_buffers();
   data_available = 1;
-}
-
-void zero_pulses (volatile uint8_t *array) {
-  uint8_t ctr;
-  for (ctr = 0; ctr < IR_RAW_SIZE; ctr++) {
-    array[ctr] = 0;
-  }
+  
+  ir_reset();
 }
 
 void flip_buffers (void) {
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    zero_pulses(ir_signal_copy);
-
-    volatile uint8_t *tmp;
-    tmp = ir_signal_copy;
-    ir_signal_copy = ir_signal;
-    ir_signal = tmp;
-  }
+  volatile uint8_t *tmp;
+  tmp = ir_signal_copy;
+  ir_signal_copy = ir_signal;
+  ir_signal = tmp;
 }

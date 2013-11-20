@@ -1,8 +1,9 @@
 #define	IR_RAW_SIZE 128
 
-// TODO: Do something useful with this or kill it? Dependent on prescaler settings.
-#define MIN_PULSE 100U
-#define MAX_PULSE 10000U
+// Length in realtime depends on prescaler settings. In this case, each timer
+// tick should be 0.5us.
+#define MIN_PULSE 100U    // 50us
+#define MAX_PULSE 20000U  // 10000us or 10ms
 
 // Since this receiver uses a universal learning approach, the EEPROM size sets
 // the upper bound on the number of codes we can store. There are available 512
