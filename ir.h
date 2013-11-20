@@ -23,11 +23,11 @@ typedef enum {
   NO_MATCH = -1
 } ir_command_t;
 
-extern void ir_init(void);
-extern void ir_enable(void);
-extern void ir_disable(void);
-extern bool ir_available(void);
-extern ir_command_t match_ir_code(volatile uint8_t *);
+extern void ir_init (void);
+extern void ir_enable (void);
+extern void ir_disable (void);
+extern bool ir_available (void);
+extern ir_command_t match_ir_code (volatile uint8_t *);
 
 extern const char *command_labels[];
 extern volatile uint8_t *ir_signal_readcopy;

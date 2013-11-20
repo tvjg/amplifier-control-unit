@@ -26,8 +26,8 @@ const char *command_labels[NUMBER_OF_IR_CODES] = {
   "Mute"
 };
 
-static void ir_reset(void);
-static void flip_buffers(void);
+static void ir_reset (void);
+static void flip_buffers (void);
 
 void ir_init (void) {
   DDRD  &= ~(1 << PD2);     // PD2/D2/Infrared as input
