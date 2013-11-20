@@ -15,8 +15,8 @@ static volatile uint8_t *ir_signal = ir_raw_a;
 volatile uint8_t *ir_signal_readcopy = ir_raw_b;
 
 static volatile uint8_t change_count = 0;
-static volatile bool receiving = 0;
-static volatile bool data_available = 0;
+static volatile uint8_t receiving = 0;
+static volatile uint8_t data_available = 0;
 
 static uint8_t ir_commands[NUMBER_OF_IR_CODES][IR_RAW_SIZE];
 
@@ -56,14 +56,14 @@ void ir_reset (void) {
   receiving = 0;
 }
 
-bool ir_available (void) {
+uint8_t ir_available (void) {
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     if (data_available) {
       data_available = 0;
       return 1;
     }
-    return 0;
   }
+  return 0;
 }
 
 ir_command_t match_ir_code(volatile uint8_t *measured_ir_signal)
@@ -75,7 +75,6 @@ ISR(INT0_vect) {
   if (!receiving) {
     change_count = 0;
     receiving = 1;
-    TCNT1 = 0;
     timer1_on;
     return;
   }
