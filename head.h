@@ -1,16 +1,12 @@
-#define MAXPULSE 65000U
-#define MINPULSE 5U
-#define NUMPULSES 150U
-#define FUZZINESS 20U
+#define	IR_RAW_SIZE 128
+#define MIN_PULSE 5U
+#define MAX_PULSE 10000U
 
 // Since this receiver uses a universal learning approach, the EEPROM size sets
 // the upper bound on the number of codes we can store. There are available 512
 // bytes on the Atmega168, 1024 bytes on the 328. 
 //
-// RequiredBytes = NUMPULSES * NUMBER_OF_IR_CODES * (sizeof uint16_t).
-//
-// Currently:
-//   432 bytes = 72 * 3 * 2 bytes
+// RequiredBytes = IR_RAW_SIZE * NUMBER_OF_IR_CODES * (sizeof uint8_t).
 #define NUMBER_OF_IR_CODES 3
 
 typedef enum { 
@@ -18,11 +14,10 @@ typedef enum {
   VOL_DOWN, 
   MUTE,
   NO_MATCH = -1
-} IR_code_t;
+} ir_command_t;
 
 const char *command_labels[NUMBER_OF_IR_CODES] = {
   "Volume Up",
   "Volume Down",
   "Mute"
 };
-
