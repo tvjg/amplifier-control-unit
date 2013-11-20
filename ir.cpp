@@ -4,9 +4,9 @@
 // 16MHz clock with prescaler means TCNT1 increments every 0.5us
 //
 // This yields a max possible timer period of ~32.77ms; however, we are
-// effectively limited by MAX_PULSE
-#define timer1_on  { TCCR1B |= (1 << CS11); }
-#define timer1_off { TCCR1B &= ~((1 << CS12) | (1 << CS11) | (1 << CS10)); }
+// effectively limited by MAX_PULSE here
+#define timer1_on  { TCCR1B |= _BV(CS11); }
+#define timer1_off { TCCR1B &= ~(_BV(CS12) | _BV(CS11) | _BV(CS10)); }
 
 // double buffering
 static volatile uint8_t ir_raw_a[IR_RAW_SIZE];
@@ -30,25 +30,25 @@ static void ir_reset (void);
 static void flip_buffers (void);
 
 void ir_init (void) {
-  DDRD  &= ~(1 << PD2);     // PD2/D2/Infrared as input
-  PORTD |=  (1 << PD2);     // pull-up on
+  DDRD  &= ~_BV(PD2);     // PD2/D2/Infrared as input
+  PORTD |=  _BV(PD2);     // pull-up on
 
-  EICRA |=  (1 << ISC00);   // trigger INT0 on any change
+  EICRA |=  _BV(ISC00);   // trigger INT0 on any change
 
   // Timer1 setup
   TCCR1A = 0x00;
-  TCCR1B = (1 << WGM12);
+  TCCR1B = _BV(WGM12);
   TCNT1  = 0x0000;
   OCR1A  = (MAX_PULSE - 1); // 10ms
-  TIMSK1 = (1 << OCIE1A);
+  TIMSK1 = _BV(OCIE1A);
 }
 
 void ir_enable (void) {
-  EIMSK |=  (1 << INT0);
+  EIMSK |=  _BV(INT0);
 }
 
 void ir_disable (void) {
-  EIMSK &=  ~(1 << INT0);
+  EIMSK &=  ~_BV(INT0);
 }
 
 void ir_reset (void) {
