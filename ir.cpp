@@ -2,7 +2,7 @@
 
 // CS12=0 CS11=1 CS10=0 => Set prescaler to clock/8
 // 16MHz clock with prescaler means TCNT1 increments every 0.5us
-// 
+//
 // This yields a max possible timer period of ~32.77ms; however, we are
 // effectively limited by MAX_PULSE
 #define timer1_on  { TCCR1B |= (1 << CS11); }
@@ -79,17 +79,17 @@ ISR(INT0_vect) {
     timer1_on;
     return;
   }
-  
+
   uint16_t pulse_length = TCNT1;
-  
+
   // got some bouncing ? ignore that.
   if (pulse_length < MIN_PULSE) {
-    return;                                     
+    return;
   }
 
   ir_signal[change_count] = TCNT1H;
   change_count++;
-  
+
   if (change_count == (IR_RAW_SIZE - 1)) {
     change_count = 0;
   }
@@ -99,10 +99,10 @@ ISR(INT0_vect) {
 
 ISR(TIMER1_COMPA_vect) {
   ir_signal[change_count] = 0xFF;
-  
+
   flip_buffers();
   data_available = 1;
-  
+
   ir_reset();
 }
 

@@ -3,7 +3,7 @@
 #include "ir.h"
 
 #define SERIAL_LOG
-#define IR_DEBUG_RAW 
+#define IR_DEBUG_RAW
 
 int main (void) {
   init();  // take care of Arduino timers etc. etc.
@@ -55,7 +55,7 @@ void dump_ir_raw (void) {
     Serial.print("\t\t");
     Serial.println(ir_signal_readcopy[i+1], DEC);
 
-    if (ir_signal_readcopy[i+1] == 0xFF) break; 
+    if (ir_signal_readcopy[i+1] == 0xFF) break;
   }
 
   Serial.print("\n\rPulse Count: ");
