@@ -26,14 +26,21 @@ int main (void) {
 #endif
 
   ir_init();
-  ir_enable();
-
   sei();
 
-  // TODO: We need to setup a way to learn the code the codes before we enter
-  // the permanent matching loop. Learning routine should eventually be driven
-  // by hitting a reset switch inside the case. For now, learning should be
-  // activated if no codes are found in memory or a flag is set.
+  for (uint8_t i = 0; i < NUMBER_OF_IR_CODES; i++) {
+    // TODO: Don't just dump to stdout willy-nilly. Will probably need
+    // something for LCD.
+    printf("Ready to learn code for %s.\n\n", command_labels[i]);
+    learn_ir_code(i);
+
+#ifdef IR_LOG_VERBOSE
+    print_ir_timings(ir_signal_readcopy);
+    printf("\n");
+#endif
+  }
+
+  ir_enable();
 
   while (1) {
     if (ir_available()) {

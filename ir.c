@@ -18,7 +18,7 @@ static volatile uint8_t change_count = 0;
 static volatile uint8_t receiving = 0;
 static volatile uint8_t data_available = 0;
 
-static uint8_t ir_commands[NUMBER_OF_IR_CODES][IR_RAW_SIZE];
+static uint8_t ir_commands[NUMBER_OF_IR_CODES][IR_RAW_SIZE] = {{ 0xFF }};
 
 const char *command_labels[NUMBER_OF_IR_CODES] = {
   "Volume Up",
@@ -44,6 +44,9 @@ void ir_init (void) {
 }
 
 void ir_enable (void) {
+  // The interrupt flag can be set even though intterupt triggering is
+  // disabled. Clear before re-enabling.
+  EIFR = (1 << INT0);
   EIMSK |=  _BV(INT0);
 }
 
@@ -66,8 +69,19 @@ uint8_t ir_available (void) {
   return 0;
 }
 
-ir_command_t match_ir_code (volatile uint8_t *measured_ir_signal)
-{
+void learn_ir_code (ir_command_t cmd) {
+  ir_enable();
+
+  while (1) {
+    if (!ir_available()) continue;
+
+    ir_disable();
+    memcpy(&ir_commands[cmd], (void *) ir_signal_readcopy, IR_RAW_SIZE);
+    break;
+  }
+}
+
+ir_command_t match_ir_code (volatile uint8_t *measured_ir_signal) {
   return NO_MATCH;
 }
 

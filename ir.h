@@ -1,3 +1,4 @@
+#include <string.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/atomic.h>
@@ -27,6 +28,7 @@ extern void ir_init (void);
 extern void ir_enable (void);
 extern void ir_disable (void);
 extern uint8_t ir_available (void);
+extern void learn_ir_code (ir_command_t);
 extern ir_command_t match_ir_code (volatile uint8_t *);
 
 extern const char *command_labels[];
