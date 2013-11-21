@@ -66,7 +66,7 @@ uint8_t ir_available (void) {
   return 0;
 }
 
-ir_command_t match_ir_code(volatile uint8_t *measured_ir_signal)
+ir_command_t match_ir_code (volatile uint8_t *measured_ir_signal)
 {
   return NO_MATCH;
 }
