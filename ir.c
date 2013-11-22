@@ -79,6 +79,9 @@ void learn_ir_code (ir_command_t cmd) {
     memcpy(&ir_commands[cmd], (void *) ir_signal_readcopy, IR_RAW_SIZE);
     break;
   }
+
+  // Wait to fudge for any trailing bursts like repeats
+  _delay_ms(200);
 }
 
 ir_command_t match_ir_command (volatile uint8_t *signal) {

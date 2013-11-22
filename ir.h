@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/atomic.h>
+#include <util/delay.h>
 
 #define	IR_RAW_SIZE 128
 
