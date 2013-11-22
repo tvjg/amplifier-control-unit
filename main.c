@@ -6,10 +6,9 @@
 #define SERIAL_LOG
 #define IR_LOG_VERBOSE
 
-// TODO: We need to setup a way to learn the code the codes before we enter
-// the permanent matching loop. Learning routine should eventually be driven
-// by hitting a reset switch inside the case. For now, learning should be
-// activated if no codes are found in memory or a flag is set.
+// TODO: Learning routine should eventually be driven by hitting a reset switch
+// inside the case. For now, learning should be activated if no codes are found
+// in memory or a flag is set.
 
 // TODO: If space gets tight, consider moving strings to flash memory.
 // http://playground.arduino.cc/Main/Printf#sourceblock5
@@ -31,12 +30,16 @@ int main (void) {
   for (uint8_t i = 0; i < NUMBER_OF_IR_CODES; i++) {
     // TODO: Don't just dump to stdout willy-nilly. Will probably need
     // something for LCD.
-    printf("Ready to learn code for %s.\n\n", command_labels[i]);
+    printf("Ready to learn %s command.\n\n", command_labels[i]);
     learn_ir_code(i);
 
+#ifdef SERIAL_LOG
 #ifdef IR_LOG_VERBOSE
     print_ir_timings(ir_signal_readcopy);
     printf("\n");
+#endif
+
+    printf("Learned %s command.\n\n", command_labels[i]);
 #endif
   }
 
@@ -45,14 +48,14 @@ int main (void) {
   while (1) {
     if (ir_available()) {
       ir_command_t cmd = match_ir_code(ir_signal_readcopy);
-      const char* msg = (cmd < 0) ? "Unknown Code" : command_labels[cmd];
+      const char* msg = (cmd < 0) ? "Unknown" : command_labels[cmd];
 
 #ifdef SERIAL_LOG
 #ifdef IR_LOG_VERBOSE
       print_ir_timings(ir_signal_readcopy);
 #endif
 
-      printf("Diagnosis: %s\n\n", msg);
+      printf("Command: %s\n\n", msg);
 #endif
     }
   }
