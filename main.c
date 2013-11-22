@@ -47,7 +47,7 @@ int main (void) {
 
   while (1) {
     if (ir_available()) {
-      ir_command_t cmd = match_ir_code(ir_signal_readcopy);
+      ir_command_t cmd = match_ir_command(ir_signal_readcopy);
       const char* msg = (cmd < 0) ? "Unknown" : command_labels[cmd];
 
 #ifdef SERIAL_LOG

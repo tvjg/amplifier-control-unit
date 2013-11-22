@@ -81,7 +81,19 @@ void learn_ir_code (ir_command_t cmd) {
   }
 }
 
-ir_command_t match_ir_code (volatile uint8_t *measured_ir_signal) {
+ir_command_t match_ir_command (volatile uint8_t *signal) {
+  for (uint8_t i = 0; i < NUMBER_OF_IR_CODES; i++) {
+    for (uint8_t t = 0; t < IR_RAW_SIZE; t++) {
+      int delta = ir_commands[i][t] - signal[t];
+      uint8_t close_enough = (-1 <= delta) && (delta <= 1);
+
+      if (!close_enough) break;
+      if ((ir_commands[i][t] != 0xFF) != (signal[t] != 0xFF)) break;
+
+      if (ir_commands[i][t] == 0xFF && signal[t] == 0xFF) return i;
+    }
+  }
+
   return NO_MATCH;
 }
 
