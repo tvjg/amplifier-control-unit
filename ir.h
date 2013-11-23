@@ -11,6 +11,8 @@
 #define MIN_PULSE 100U    // 50us
 #define MAX_PULSE 20000U  // 10000us or 10ms
 
+#define HANDLE_REPEATS
+
 // Since this receiver uses a universal learning approach, the EEPROM size sets
 // the upper bound on the number of codes we can store. There are available 512
 // bytes on the Atmega168, 1024 bytes on the 328.
