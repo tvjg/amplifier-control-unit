@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <avr/eeprom.h>
 
 #include "uart.h"
 #include "ir.h"
@@ -7,8 +8,8 @@
 #define IR_LOG_VERBOSE
 
 // TODO: Learning routine should eventually be driven by hitting a reset switch
-// inside the case. For now, learning should be activated if no codes are found
-// in memory or a flag is set.
+// inside the case. For now, a flag should be set.
+/*#define RESET_COMMANDS*/
 
 // TODO: If space gets tight, consider moving strings to flash memory.
 // http://playground.arduino.cc/Main/Printf#sourceblock5
@@ -27,6 +28,8 @@ int main (void) {
   ir_init();
   sei();
 
+#ifdef RESET_COMMANDS
+
   for (uint8_t i = 0; i < NUMBER_OF_IR_CODES; i++) {
     // TODO: Don't just dump to stdout willy-nilly. Will probably need
     // something for LCD.
@@ -42,6 +45,20 @@ int main (void) {
     printf("Learned %s command.\n\n", command_labels[i]);
 #endif
   }
+
+  eeprom_write_block(&ir_commands, 0x00, NUMBER_OF_IR_CODES * IR_RAW_SIZE);
+#ifdef SERIAL_LOG
+  printf("Commands written to EEPROM.\n\n");
+#endif
+
+#else
+
+  eeprom_read_block(&ir_commands, 0x00, NUMBER_OF_IR_CODES * IR_RAW_SIZE);
+#ifdef SERIAL_LOG
+  printf("Commands read from EEPROM.\n\n");
+#endif
+
+#endif
 
   ir_enable();
 

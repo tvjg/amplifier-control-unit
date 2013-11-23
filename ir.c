@@ -33,7 +33,7 @@ static struct {
   NO_MATCH, 0, 0, 0
 };
 
-static uint8_t ir_commands[NUMBER_OF_IR_CODES][IR_RAW_SIZE] = {{ 0xFF }};
+uint8_t ir_commands[NUMBER_OF_IR_CODES][IR_RAW_SIZE] = {{ 0xFF }};
 
 const char *command_labels[NUMBER_OF_IR_CODES] = {
   "Volume Up",
