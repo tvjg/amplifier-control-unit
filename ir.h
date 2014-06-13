@@ -34,6 +34,6 @@ extern uint8_t ir_available (void);
 extern void learn_ir_code (ir_command_t);
 extern ir_command_t match_ir_command (volatile uint8_t *);
 
-extern uint8_t ir_commands[NUMBER_OF_IR_CODES][IR_RAW_SIZE]};
+extern uint8_t ir_commands[NUMBER_OF_IR_CODES][IR_RAW_SIZE];
 extern const char *command_labels[];
 extern volatile uint8_t *ir_signal_readcopy;
